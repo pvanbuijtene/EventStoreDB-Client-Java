@@ -13,13 +13,15 @@ public class SingleNodeClient implements GrpcClient {
     private final ManagedChannel channel;
     private final SslContext context;
     private final Timeouts timeouts;
+    private final boolean keepAlive;
 
-    public SingleNodeClient(String host, int port, Timeouts timeouts, SslContext context) {
+    public SingleNodeClient(String host, int port, Timeouts timeouts, SslContext context, boolean keepAlive) {
         this.host = host;
         this.port = port;
         this.context = context;
         this.timeouts = timeouts;
         this.channel = createChannel();
+        this.keepAlive = keepAlive;
     }
 
     private ManagedChannel createChannel() {
@@ -32,7 +34,7 @@ public class SingleNodeClient implements GrpcClient {
             builder.sslContext(context);
         }
 
-        return builder.build();
+        return builder.keepAliveWithoutCalls(keepAlive).build();
     }
 
     @Override

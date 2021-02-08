@@ -11,6 +11,7 @@ public class EventStoreDBClientSettings {
     private boolean throwOnAppendFailure;
     private Credentials defaultCredentials;
     private Endpoint[] hosts;
+    private boolean keepAlive;
 
     public boolean isDnsDiscover() {
         return dnsDiscover;
@@ -52,6 +53,10 @@ public class EventStoreDBClientSettings {
         return hosts;
     }
 
+    public boolean isKeepAlive() {
+        return keepAlive;
+    }
+
 
     public EventStoreDBClientSettings(
             boolean dnsDiscover,
@@ -63,7 +68,8 @@ public class EventStoreDBClientSettings {
             boolean tlsVerifyCert,
             boolean throwOnAppendFailure,
             Credentials defaultCredentials,
-            Endpoint[] hosts
+            Endpoint[] hosts,
+            boolean keepAlive
     ) {
         this.dnsDiscover = dnsDiscover;
         this.maxDiscoverAttempts = maxDiscoverAttempts;
@@ -75,6 +81,7 @@ public class EventStoreDBClientSettings {
         this.throwOnAppendFailure = throwOnAppendFailure;
         this.defaultCredentials = defaultCredentials;
         this.hosts = hosts;
+        this.keepAlive = keepAlive;
     }
 
     public static ConnectionSettingsBuilder builder() {

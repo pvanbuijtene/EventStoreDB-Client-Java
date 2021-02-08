@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class ConnectionBuilder {
     private Timeouts _timeouts;
     private SslContext _sslContext = null;
+    private boolean _keepAlive = false;
 
     public ConnectionBuilder() {
         _timeouts = Timeouts.DEFAULT;
@@ -27,8 +28,13 @@ public class ConnectionBuilder {
         return this;
     }
 
+    public ConnectionBuilder keepAlive(boolean value) {
+        _keepAlive = value;
+        return this;
+    }
+
     public GrpcClient createSingleNodeConnection(Endpoint endpoint) {
-        return new SingleNodeClient(endpoint.getHostname(), endpoint.getPort(), _timeouts, _sslContext);
+        return new SingleNodeClient(endpoint.getHostname(), endpoint.getPort(), _timeouts, _sslContext, _keepAlive);
     }
 
     public GrpcClient createSingleNodeConnection(String hostname, int port) {
@@ -49,7 +55,7 @@ public class ConnectionBuilder {
             addresses.add(address);
         }
 
-        return new EventStoreDBClusterClient(addresses, null, nodePreference, _timeouts, _sslContext);
+        return new EventStoreDBClusterClient(addresses, null, nodePreference, _timeouts, _sslContext, _keepAlive);
     }
 
     public GrpcClient createClusterConnectionUsingDns(Endpoint endpoint) {
@@ -57,12 +63,14 @@ public class ConnectionBuilder {
     }
 
     public GrpcClient createClusterConnectionUsingDns(Endpoint endpoint, NodePreference nodePreference) {
-        return new EventStoreDBClusterClient(null, endpoint, nodePreference, _timeouts, _sslContext);
+        return new EventStoreDBClusterClient(null, endpoint, nodePreference, _timeouts, _sslContext, false);
     }
 
     public GrpcClient createConnectionFromConnectionSettings(EventStoreDBClientSettings clientSettings) {
 
         ConnectionBuilder builder = new ConnectionBuilder();
+
+        builder = builder.keepAlive(clientSettings.isKeepAlive());
 
         if (clientSettings.isTls()) {
             try {

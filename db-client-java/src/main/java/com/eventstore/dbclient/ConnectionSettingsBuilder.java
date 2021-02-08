@@ -14,6 +14,7 @@ public class ConnectionSettingsBuilder {
     private boolean _throwOnAppendFailure = true;
     private EventStoreDBClientSettings.Credentials _defaultCredentials;
     private LinkedList<Endpoint> _hosts = new LinkedList<>();
+    private boolean _keepAlive;
 
     public EventStoreDBClientSettings buildConnectionSettings() {
         return new EventStoreDBClientSettings(_dnsDiscover,
@@ -25,8 +26,8 @@ public class ConnectionSettingsBuilder {
                 _tlsVerifyCert,
                 _throwOnAppendFailure,
                 _defaultCredentials,
-                _hosts.toArray(new Endpoint[_hosts.size()])
-        );
+                _hosts.toArray(new Endpoint[_hosts.size()]),
+                _keepAlive);
     }
 
     public ConnectionSettingsBuilder dnsDiscover(boolean dnsDiscover) {
@@ -76,6 +77,11 @@ public class ConnectionSettingsBuilder {
 
     public ConnectionSettingsBuilder addHost(Endpoint host) {
         this._hosts.push(host);
+        return this;
+    }
+
+    public ConnectionSettingsBuilder keepAlive(boolean value) {
+        this._keepAlive = value;
         return this;
     }
 }

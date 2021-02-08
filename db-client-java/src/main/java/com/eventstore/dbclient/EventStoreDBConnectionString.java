@@ -30,6 +30,7 @@ public class EventStoreDBConnectionString {
             put("tls", "tls");
             put("tlsverifycert", "tlsVerifyCert");
             put("throwonappendfailure", "throwOnAppendFailure");
+            put("keepalive", "keepAlive");
         }
     };
 
@@ -261,6 +262,13 @@ public class EventStoreDBConnectionString {
                     throw new ParseError(this.connectionString, keyPosition, this.nextPosition, "true or false");
                 }
                 this.settings.throwOnAppendFailure(value.equals("true"));
+                break;
+            }
+            case "keepAlive": {
+                if (!value.equals("true") && !value.equals("false")) {
+                    throw new ParseError(this.connectionString, keyPosition, this.nextPosition, "true or false");
+                }
+                this.settings.keepAlive(value.equals("true"));
                 break;
             }
             default: {

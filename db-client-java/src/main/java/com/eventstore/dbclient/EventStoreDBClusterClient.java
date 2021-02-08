@@ -40,8 +40,9 @@ public class EventStoreDBClusterClient implements GrpcClient {
     private final SslContext sslContext;
     private final Timeouts timeouts;
     private LinkedBlockingQueue<Msg> messages;
+    private final boolean keepAlive;
 
-    public EventStoreDBClusterClient(List<InetSocketAddress> seedNodes, Endpoint domainEndpoint, NodePreference nodePreference, Timeouts timeouts, SslContext sslContext) {
+    public EventStoreDBClusterClient(List<InetSocketAddress> seedNodes, Endpoint domainEndpoint, NodePreference nodePreference, Timeouts timeouts, SslContext sslContext, boolean keepAlive) {
         this.seedNodes = seedNodes;
         this.nodePreference = nodePreference;
         this.sslContext = sslContext;
@@ -49,6 +50,7 @@ public class EventStoreDBClusterClient implements GrpcClient {
         this.domainEndpoint = domainEndpoint;
         this.currentChannelId = UUID.randomUUID();
         this.messages = new LinkedBlockingQueue<>();
+        this.keepAlive = keepAlive;
 
         try {
             this.messages.put(new CreateChannel(this.currentChannelId));
@@ -68,7 +70,7 @@ public class EventStoreDBClusterClient implements GrpcClient {
             builder.sslContext(this.sslContext);
         }
 
-        return builder.build();
+        return builder.keepAliveWithoutCalls(this.keepAlive).build();
     }
 
     private void messageLoop() {
